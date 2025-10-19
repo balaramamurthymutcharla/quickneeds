@@ -30,6 +30,14 @@ export default (sequelize) => {
     purchased_by_user_id: {
       type: DataTypes.UUID,
     },
+    quantity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
+    cost: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0.0,
+    },
     last_purchased_at: {
       type: DataTypes.DATE,
     },
