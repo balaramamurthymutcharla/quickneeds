@@ -2,6 +2,7 @@ import sequelize from '../config/db.config.js';
 import defineUser from './user.model.js';
 import defineFamily from './family.model.js';
 import defineRoom from './room.model.js';
+import defineUserFamily from './userFamily.model.js';
 import defineItem from './item.model.js';
 import defineMedication from './medication.model.js';
 import defineConversation from './conversation.model.js';
@@ -16,6 +17,7 @@ db.sequelize = sequelize;
 // Define all models
 db.User = defineUser(sequelize);
 db.Family = defineFamily(sequelize);
+db.UserFamily = defineUserFamily(sequelize);
 db.Room = defineRoom(sequelize);
 db.Item = defineItem(sequelize);
 db.Medication = defineMedication(sequelize);
@@ -26,23 +28,11 @@ db.Advertisement = defineAdvertisement(sequelize);
 
 // --- Define Relationships ---
 
-// User <-> Family (Many-to-Many)
-const FamilyMember = sequelize.define('family_members', {
-    role: {
-        type: sequelize.Sequelize.STRING(50),
-        allowNull: false,
-        validate: { isIn: [['HEAD', 'MEMBER']] }
-    },
-    status: {
-        type: sequelize.Sequelize.STRING(50),
-        allowNull: false,
-        validate: { isIn: [['PENDING', 'APPROVED', 'REJECTED']] }
-    },
-    joined_at: { type: sequelize.Sequelize.DATE }
-}, { timestamps: false });
-db.User.belongsToMany(db.Family, { through: FamilyMember, foreignKey: 'user_id' });
-db.Family.belongsToMany(db.User, { through: FamilyMember, foreignKey: 'family_id' });
-db.FamilyMember = FamilyMember;
+// User <-> Family (Many-to-Many through UserFamily)
+db.User.belongsToMany(db.Family, { through: db.UserFamily, foreignKey: 'user_id', otherKey: 'family_id' });
+db.Family.belongsToMany(db.User, { through: db.UserFamily, foreignKey: 'family_id', otherKey: 'user_id', as: 'members' });
+db.UserFamily.belongsTo(db.User, { foreignKey: 'user_id' });
+db.UserFamily.belongsTo(db.Family, { foreignKey: 'family_id' });
 
 // Family -> Room (One-to-Many)
 db.Family.hasMany(db.Room, { foreignKey: 'family_id', onDelete: 'CASCADE' });
@@ -107,9 +97,9 @@ db.MessageReadReceipt = MessageReadReceipt;
 
 export const {
     User, Family, Room, Item, Conversation, Message,
-    SuperAdmin, Advertisement
+    SuperAdmin, Advertisement, UserFamily
 } = db;
 
 export {
-    sequelize, FamilyMember, Medication, MedicationSchedule, MedicationInventory, MedicationLog, ConversationParticipant, MessageReadReceipt
+    sequelize, Medication, MedicationSchedule, MedicationInventory, MedicationLog, ConversationParticipant, MessageReadReceipt
 };
