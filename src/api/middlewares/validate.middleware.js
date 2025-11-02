@@ -1,20 +1,16 @@
-import { z } from 'zod';
+import { ApiError } from '../../utils/ApiError.js';
 
-export const validate = (schema) => (req, res, next) => {
+const validate = (schema) => (req, res, next) => {
   try {
-    schema.parse({
-      body: req.body,
-      query: req.query,
-      params: req.params,
-    });
+    schema.parse(req.body);
     next();
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: 'Validation failed',
-        errors: error.errors,
-      });
-    }
-    next(error);
+    // throw new ApiError(400, error.errors.map((e) => e.message).join(', '));
+    res.json({
+      status: 400,
+      message: "Didnt Meet valdation requirements",
+    });
   }
 };
+
+export { validate };

@@ -2,8 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import { errorHandler } from './api/middlewares/errorHandler.middleware.js';
 import mainRouter from './api/routes/index.js';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger.config.js';
 
 const app = express();
 
@@ -19,8 +17,7 @@ app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public'));
 
 // API Routes
-app.use('/api', mainRouter);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/v1', mainRouter);
 
 // Health check route
 app.get('/', (req, res) => {
