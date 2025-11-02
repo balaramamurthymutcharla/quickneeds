@@ -1,6 +1,6 @@
 # API Documentation
 
-This document provides documentation for all the available API routes in the QuickNeeds application.
+**Note:** This document provides a high-level overview of the API. For detailed, interactive documentation, please visit the `/api-docs` endpoint.
 
 ## Admin API
 
@@ -259,6 +259,44 @@ This document provides documentation for all the available API routes in the Qui
       "created_at": "datetime"
     }
     ```
+
+## Real-time Chat (Socket.IO)
+
+The chat API now supports real-time messaging using Socket.IO.
+
+### Events
+
+*   **`join_conversation`**: Joins a user to a specific conversation room.
+    *   **Payload:** `string` (conversationId)
+*   **`leave_conversation`**: Removes a user from a conversation room.
+    *   **Payload:** `string` (conversationId)
+*   **`send_message`**: Sends a message to a conversation.
+    *   **Payload:**
+        ```json
+        {
+          "conversationId": "string",
+          "message": {
+            "id": "uuid",
+            "conversation_id": "uuid",
+            "sender_id": "uuid",
+            "content_type": "string",
+            "content": "string",
+            "created_at": "datetime"
+          }
+        }
+        ```
+*   **`receive_message`**: Receives a new message in a conversation.
+    *   **Payload:**
+        ```json
+        {
+          "id": "uuid",
+          "conversation_id": "uuid",
+          "sender_id": "uuid",
+          "content_type": "string",
+          "content": "string",
+          "created_at": "datetime"
+        }
+        ```
 
 ## Family API
 
